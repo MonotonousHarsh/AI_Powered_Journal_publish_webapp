@@ -40,15 +40,7 @@ public class JounalEntryController{
         }
      }
 
-    @GetMapping("{username}")
-     public ResponseEntity<?> getAllJounalEntriesOfUser(@PathVariable String username){
-        User user =  userService.findByUsername(username) ;
-       List<JounalEntry> All = user.getJounalEntries();
-       if(All!=null&& !All.isEmpty()) {
-           return new ResponseEntity<>(All, HttpStatus.OK);
-       }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-     }
+
 
      @GetMapping("/id/{myid}")
      public ResponseEntity<JounalEntry> getJounalEntrybyId(@PathVariable ObjectId myid){
@@ -65,20 +57,46 @@ public class JounalEntryController{
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping
+    @PutMapping("/id/{id}")
     public ResponseEntity<?> updateJounalById(@PathVariable ObjectId id , @RequestBody JounalEntry newEntry){
 //        JounalEntry old = jounalEntryService.findJounalEntryById(id).orElse(null);
 //        if(old!=null){
 //            old.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().equals(" ") ? newEntry.getTitle(): old.getTitle());
 //            old.setContent(newEntry.getContent()!=null && !newEntry.getTitle().equals("")? newEntry.getTitle() : old.getTitle());
-//            jounalEntryService.SaveEntry(old);
+//    jounalEntryService.SaveEntry(old);
 //            return new ResponseEntity<>(old,HttpStatus.OK) ;
       //  }
+        Optional<JounalEntry> optionalOld = jounalEntryService
+                .findJounalEntryById(id);
 
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND) ;
+        if (!optionalOld.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        JounalEntry oldEntry = optionalOld.get();
+
+        // Patch fields
+        if (newEntry.getTitle() != null && !newEntry.getTitle().isBlank()) {
+            oldEntry.setTitle(newEntry.getTitle());
+        }
+        if (newEntry.getContent() != null && !newEntry.getContent().isBlank()) {
+            oldEntry.setContent(newEntry.getContent());
+        }
+        // …and so on for other fields like date, tags, etc.
+
+        // Save and return
+        JounalEntry updated = jounalEntryService.SaveEntry(oldEntry,oldEntry.getUser().getUsername());
+        return new ResponseEntity<>(updated, HttpStatus.OK) ;
     }
 
-
+    @GetMapping("{username}")
+    public ResponseEntity<?> getAllJounalEntriesOfUser(@PathVariable String username) {
+        User user = userService.findByUsername(username);
+        if (user != null && user.getJounalEntries() != null && !user.getJounalEntries().isEmpty()) {
+            return new ResponseEntity<>(user.getJounalEntries(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
 
 

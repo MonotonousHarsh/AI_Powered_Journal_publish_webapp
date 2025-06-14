@@ -33,16 +33,18 @@ public class UserController {
                 .body(saved);
     }
 
+
     @PutMapping("/{username}")
-    public ResponseEntity<?> updateUser(@RequestBody User user, @PathVariable String username){
-       User userInDb = userService.findByUsername(username);
-        if(userInDb != null){
-            userInDb.setUsername(user.getUsername());
-            userInDb.setPassword(user.getPassword());
-            userService.saveUser(userInDb);
-            return new ResponseEntity<>(userInDb, HttpStatus.CREATED);
+    public ResponseEntity<?> updateUser(@RequestBody User user, @PathVariable String username) {
+        User userInDb = userService.findByUsername(username);
+        if (userInDb != null) {
+            // Preserve journal entries
+            user.setJounalEntries(userInDb.getJounalEntries());
+
+            userService.saveUser(user);
+            return new ResponseEntity<>(user, HttpStatus.OK);
         }
-           return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 
