@@ -4,6 +4,8 @@ import net.harshDeveloper.JournalApp.Entity.JounalEntry;
 import net.harshDeveloper.JournalApp.Entity.User;
 import net.harshDeveloper.JournalApp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,6 +13,9 @@ import java.util.List;
 @Component
 public class UserService {
 
+
+
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Autowired
     public UserRepository userRepository;
 
@@ -30,6 +35,7 @@ public class UserService {
                 entry.setUser(user);
             }
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 

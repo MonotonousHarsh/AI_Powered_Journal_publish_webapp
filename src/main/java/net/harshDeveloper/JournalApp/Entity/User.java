@@ -34,6 +34,8 @@ public class User {
     @DBRef
     private List<JounalEntry> jounalEntries = new ArrayList<>();
 
+    private List<String> roles;
+
 
     // Add helper methods for bidirectional relationship
     public void addJournalEntry(JounalEntry entry) {

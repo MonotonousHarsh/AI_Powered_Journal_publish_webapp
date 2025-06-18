@@ -26,7 +26,7 @@ public class JounalEntryService {
 
 
     @Transactional
-    JounalEntry SaveEntry(JounalEntry jounalEntry , String username){
+   public JounalEntry SaveEntry(JounalEntry jounalEntry , String username){
     try {
         User user = userService.findByUsername(username);
         jounalEntry.setdate(LocalDateTime.now());
@@ -35,7 +35,7 @@ public class JounalEntryService {
         userService.saveUser(user);
         return saved;
     } catch (Exception e) {
-        System.out.println(e);
+
         throw new RuntimeException("An error occur while saving the entry. " , e);
     }
     }
