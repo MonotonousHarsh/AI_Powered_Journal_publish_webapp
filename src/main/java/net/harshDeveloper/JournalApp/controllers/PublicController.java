@@ -13,7 +13,7 @@ public class PublicController
 {
     @Autowired
     public UserService userService;
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User saved = userService.saveUser(user);
         return ResponseEntity
