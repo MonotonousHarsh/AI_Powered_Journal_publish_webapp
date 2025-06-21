@@ -4,7 +4,6 @@ package net.harshDeveloper.JournalApp.controllers;
 import net.harshDeveloper.JournalApp.Entity.User;
 import net.harshDeveloper.JournalApp.repository.UserRepository;
 import net.harshDeveloper.JournalApp.services.UserService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +41,7 @@ public class UserController {
             // Preserve journal entries
             user.setJounalEntries(userInDb.getJounalEntries());
 
-            userService.saveUser(user);
+            userService.saveNewUser(user);
             return new ResponseEntity<>(user, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

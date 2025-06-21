@@ -46,23 +46,27 @@ public class JounalEntryService {
     }
 
     public Optional<JounalEntry> findJounalEntryById(ObjectId id){
-       return    jounalEntryRepository.findById(id);
+        return    jounalEntryRepository.findById(id);
     }
 
 
 
-    public void deleteElemetbyId(ObjectId myid) {
-        Optional<JounalEntry> entryOptional = jounalEntryRepository.findById(myid);
-        if (entryOptional.isPresent()) {
-            JounalEntry entry = entryOptional.get();
-            User user = entry.getUser();
-
-            if (user != null) {
-                user.removeJournalEntry(entry); // Remove from user's list
+    public boolean deleteElemetbyId(ObjectId myid , String username) {
+        boolean removed = false;
+        try {
+            User user = userService.findByUsername(username);
+            removed = user.getJounalEntries().removeIf(x -> x.getId().equals(myid));
+            if (removed) {
                 userService.saveUser(user);
+                jounalEntryRepository.deleteById(myid);
             }
-            jounalEntryRepository.deleteById(myid);
+
+        }catch(Exception e){
+            System.out.println(e);
+            throw  new RuntimeException("an error occured while detecting the entry" , e);
         }
+        return removed;
+
     }
 
 }

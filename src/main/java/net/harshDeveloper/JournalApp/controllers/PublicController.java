@@ -13,11 +13,16 @@ public class PublicController
 {
     @Autowired
     public UserService userService;
-    @PostMapping
+
+
+    @PostMapping("/create-user")
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        User saved = userService.saveUser(user);
+        User saved = userService.saveNewUser(user);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(saved);
     }
+
+
+
 }

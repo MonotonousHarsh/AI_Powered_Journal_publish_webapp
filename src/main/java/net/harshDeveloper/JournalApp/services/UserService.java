@@ -29,7 +29,8 @@ public class UserService {
     public  User findByUsername( String username){
         return userRepository.findByUsername(username);
     }
-    public User saveUser(User user) {
+
+    public User saveNewUser(User user) {
         // Ensure bidirectional consistency
         if (user.getJounalEntries() != null) {
             for (JounalEntry entry : user.getJounalEntries()) {
@@ -39,6 +40,28 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(Arrays.asList("USER"));
         return userRepository.save(user);
+    }
+
+    public void  saveUser(User user){
+        userRepository.save(user);
+    }
+
+
+
+    public User saveUser_as_Admin(User user) {
+
+
+
+        // Ensure bidirectional consistency
+        if (user.getJounalEntries() != null) {
+            for (JounalEntry entry : user.getJounalEntries()) {
+                entry.setUser(user);
+            }
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoles(Arrays.asList("USER,ADMIN"));
+        return userRepository.save(user);
+
     }
 
 

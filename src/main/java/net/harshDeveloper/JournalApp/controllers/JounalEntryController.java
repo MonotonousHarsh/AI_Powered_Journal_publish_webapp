@@ -9,12 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/jounal")
@@ -27,12 +30,14 @@ public class JounalEntryController{
    @Autowired
    private UserService userService;
 
-    @PostMapping("{username}")
-     public ResponseEntity<JounalEntry> CreateEntry(@RequestBody JounalEntry jounalEntry , @PathVariable String username){
+    @PostMapping()
+     public ResponseEntity<JounalEntry> CreateEntry(@RequestBody JounalEntry jounalEntry ){
       //  System.out.println("Received payload: " + jounalEntry);
 
         try {
         //    jounalEntry.setdate(LocalDateTime.now());
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
             jounalEntryService.SaveEntry(jounalEntry,username);
             return new ResponseEntity<>(jounalEntry,HttpStatus.CREATED)                    ;
         }catch(Exception e){
@@ -43,22 +48,38 @@ public class JounalEntryController{
 
 
      @GetMapping("/id/{myid}")
-     public ResponseEntity<JounalEntry> getJounalEntrybyId(@PathVariable ObjectId myid){
-        Optional<JounalEntry> jounalEntry =  jounalEntryService.findJounalEntryById(myid);
-        if(jounalEntry.isPresent()){
-            return new ResponseEntity<>(jounalEntry.get(),HttpStatus.OK);
-        }
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+     public ResponseEntity<JounalEntry> getJounalEntrybyId(@PathVariable ObjectId myid) {
+         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+         String username = authentication.getName();
+         User user = userService.findByUsername(username);
+         List<JounalEntry> collect = user.getJounalEntries().stream().filter(x -> x.getId().equals(myid)).collect(Collectors.toList());
+         if (!collect.isEmpty()) {
+             Optional<JounalEntry> jounalEntry = jounalEntryService.findJounalEntryById(myid);
+
+
+             if (jounalEntry.isPresent()) {
+                 return new ResponseEntity<>(jounalEntry.get(), HttpStatus.OK);
+             }
+         }
+             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+         }
+
 
     @DeleteMapping("/id/{myid}")
     public ResponseEntity<?> DeleteJounalEntrybyId ( @PathVariable ObjectId myid){
-        jounalEntryService.deleteElemetbyId(myid);
-        return new ResponseEntity<>(HttpStatus.OK);
+        Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        boolean removed =    jounalEntryService.deleteElemetbyId(myid,username);
+        if(removed){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }else{
+             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
     }
 
-    @PutMapping("/id/{id}")
-    public ResponseEntity<?> updateJounalById(@PathVariable ObjectId id , @RequestBody JounalEntry newEntry){
+    @PutMapping("/id/{myid}")
+    public ResponseEntity<?> updateJounalById(@PathVariable ObjectId myid , @RequestBody JounalEntry newEntry){
 //        JounalEntry old = jounalEntryService.findJounalEntryById(id).orElse(null);
 //        if(old!=null){
 //            old.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().equals(" ") ? newEntry.getTitle(): old.getTitle());
@@ -66,31 +87,35 @@ public class JounalEntryController{
 //    jounalEntryService.SaveEntry(old);
 //            return new ResponseEntity<>(old,HttpStatus.OK) ;
       //  }
-        Optional<JounalEntry> optionalOld = jounalEntryService
-                .findJounalEntryById(id);
-
-        if (!optionalOld.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userService.findByUsername(username);
+        List<JounalEntry> collect = user.getJounalEntries().stream().filter(x->x.getId().equals(myid)).collect(Collectors.toList());
+        if(!collect.isEmpty()){
+            Optional<JounalEntry> optionalOld = jounalEntryService
+                    .findJounalEntryById(myid);
+            if(optionalOld.isPresent()){
+                JounalEntry old = optionalOld.get();
+                old.setTitle(newEntry.getTitle() != null && ! newEntry.getTitle().equals(" ") ? newEntry.getTitle() : old.getTitle());
+                old.setContent(newEntry.getContent() != null && !newEntry.getContent().equals("") ? newEntry.getTitle() : old.getTitle());
+                jounalEntryService.SaveEntry(old , username);
+                return new ResponseEntity<>(old  , HttpStatus.OK);
+            }
         }
 
-        JounalEntry oldEntry = optionalOld.get();
 
-        // Patch fields
-        if (newEntry.getTitle() != null && !newEntry.getTitle().isBlank()) {
-            oldEntry.setTitle(newEntry.getTitle());
-        }
-        if (newEntry.getContent() != null && !newEntry.getContent().isBlank()) {
-            oldEntry.setContent(newEntry.getContent());
-        }
-        // …and so on for other fields like date, tags, etc.
+
+
 
         // Save and return
-        JounalEntry updated = jounalEntryService.SaveEntry(oldEntry,oldEntry.getUser().getUsername());
-        return new ResponseEntity<>(updated, HttpStatus.OK) ;
+
+        return new ResponseEntity<>( HttpStatus.NOT_FOUND) ;
     }
 
-    @GetMapping("{username}")
-    public ResponseEntity<?> getAllJounalEntriesOfUser(@PathVariable String username) {
+    @GetMapping()
+    public ResponseEntity<?> getAllJounalEntriesOfUser( ) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         User user = userService.findByUsername(username);
         if (user != null && user.getJounalEntries() != null && !user.getJounalEntries().isEmpty()) {
             return new ResponseEntity<>(user.getJounalEntries(), HttpStatus.OK);
