@@ -1,0 +1,21 @@
+
+#
+#spring.data.mongodb.uri=mongodb+srv://monotonousharsh:I2UMWAnU0WXZ8csc@cluster0.ag2sl5g.mongodb.net/jounaldb?retryWrites=true&w=majority&appName=Cluster0&tls=true&connectTimeoutMS=10000
+#spring.data.mongodb.database = jounaldb
+#spring.data.mongodb.auto-index-creation=true
+#logging.level.org.springframework.web=DEBUG
+#logging.level.org.springframework.http.converter.json=DEBUG
+#
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://monotonousharsh:I2UMWAnU0WXZ8csc@cluster0.ag2sl5g.mongodb.net/jounaldb?retryWrites=true&w=majority&appName=Cluster0&tls=true&connectTimeoutMS=10000
+      database: jounaldb
+      auto-index-creation: true
+
+
+server:
+  port: 8080
+  servlet:
+    context-path: /jounal

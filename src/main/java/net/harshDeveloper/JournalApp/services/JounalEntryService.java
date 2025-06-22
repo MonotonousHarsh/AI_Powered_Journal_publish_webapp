@@ -1,9 +1,11 @@
 package net.harshDeveloper.JournalApp.services;
 
+import lombok.extern.slf4j.Slf4j;
 import net.harshDeveloper.JournalApp.Entity.JounalEntry;
 import net.harshDeveloper.JournalApp.Entity.User;
 import net.harshDeveloper.JournalApp.repository.JounalEntryRepositopry;
 import org.bson.types.ObjectId;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,9 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 
 @Component
+@Slf4j
 public class JounalEntryService {
 
     @Autowired
@@ -22,6 +26,8 @@ public class JounalEntryService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private User user;
 
 
 
@@ -35,6 +41,7 @@ public class JounalEntryService {
         userService.saveUser(user);
         return saved;
     } catch (Exception e) {
+           log.error("error ocurred in {} : " ,user.getUsername() , e);
 
         throw new RuntimeException("An error occur while saving the entry. " , e);
     }
