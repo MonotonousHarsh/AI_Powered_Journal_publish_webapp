@@ -4,9 +4,11 @@ import net.harshDeveloper.JournalApp.Entity.JounalEntry;
 import net.harshDeveloper.JournalApp.Entity.User;
 import net.harshDeveloper.JournalApp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
@@ -63,7 +65,10 @@ public class UserService {
         return userRepository.save(user);
 
     }
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
 
-
+    }
 
 }

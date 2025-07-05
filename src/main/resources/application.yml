@@ -1,6 +1,22 @@
 spring:
+  redis:
+    uri: redis-cli -u redis://default:fNh4iimyC58gstQAF0UswT1dA3nHtTSA@redis-10513.crce179.ap-south-1-1.ec2.redns.redis-cloud.com:10513
+
+
+
   profiles:
-    active: prod
+    active: dev
+  mail :
+    host: smtp.gmail.com
+    port: 587
+    username: saxenaharsh50984@gmail.com
+    password: abgm ycdr uggk rtff
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 
 
@@ -12,4 +28,12 @@ logging:
     net:
       harshDeveloper:
         JournalApp: DEBUG
+
+
+
+weather:
+  api:
+    key: 08ad43a492e8eb64e324dc79e1aa511c
+
+
 

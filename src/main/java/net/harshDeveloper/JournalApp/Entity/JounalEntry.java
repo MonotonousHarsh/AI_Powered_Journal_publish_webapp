@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.harshDeveloper.JournalApp.enums.Sentiment;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -27,6 +28,9 @@ public class JounalEntry {
     private String title;
 
     private String content;
+
+
+    private Sentiment sentiment;
 
     @Setter
     private LocalDateTime date;

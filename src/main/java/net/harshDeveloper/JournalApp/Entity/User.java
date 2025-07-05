@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+@Component
 public class User {
 
     @Id
@@ -30,6 +32,14 @@ public class User {
 
     @NonNull
     private String password;
+
+    @NonNull
+    private String Email;
+
+    private boolean sentimentsAnalysis;
+
+
+
 
     @DBRef
     private List<JounalEntry> jounalEntries = new ArrayList<>();
