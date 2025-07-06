@@ -117,8 +117,9 @@ public class JounalEntryController{
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         User user = userService.findByUsername(username);
-        if (user != null && user.getJounalEntries() != null && !user.getJounalEntries().isEmpty()) {
-            return new ResponseEntity<>(user.getJounalEntries(), HttpStatus.OK);
+         List<JounalEntry> all =                 user.getJounalEntries();
+        if (all != null &&  !all.isEmpty()) {
+            return new ResponseEntity<>(all, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
