@@ -3,6 +3,7 @@ package net.harshDeveloper.JournalApp.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,11 +18,13 @@ import java.util.Map;
 @Component
 public class JwtUtils {
 
-    private  String SECRET_KEY = "ZrUqXFHJoGIb7DSwBKuBOmfOB2k7W4/7quXloT8bVRs=";
+    private final String SECRET_KEY = "ZrUqXFHJoGIb7DSwBKuBOmfOB2k7W4/7quXloT8bVRs=";
 
-            public SecretKey getSigningKey(){
-                return  Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
-            }
+
+    private SecretKey getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 
             public String ExtractUsername(String token){
                 String subject = ExtractAllClaims(token).getSubject();

@@ -41,20 +41,45 @@ public class User {
 
 
 
-    @DBRef
+   @DBRef(lazy = true)
     private List<JounalEntry> jounalEntries = new ArrayList<>();
 
     private List<String> roles;
-
+    // FIXED toString() - EXCLUDE journalEntries
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", username='" + username + '\'' +
+                // DO NOT include journalEntries here!
+                '}';
+    }
 
     // Add helper methods for bidirectional relationship
+
+    // Improved bidirectional relationship management
     public void addJournalEntry(JounalEntry entry) {
-        jounalEntries.add(entry);
-        entry.setUser(this);
+        if (entry == null) return;
+
+        if (!jounalEntries.contains(entry)) {
+            jounalEntries.add(entry);
+            entry.setUser(this);  // Critical: sets both user and userId
+        }
     }
 
     public void removeJournalEntry(JounalEntry entry) {
         jounalEntries.remove(entry);
         entry.setUser(null);
+    }
+
+    // New method to set entries while maintaining integrity
+    public void setJournalEntries(List<JounalEntry> entries) {
+        // Clear existing references
+        new ArrayList<>(jounalEntries).forEach(this::removeJournalEntry);
+
+        // Add new entries
+        if (entries != null) {
+            entries.forEach(this::addJournalEntry);
+        }
     }
 }

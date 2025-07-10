@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserDetailServiceImpl implements UserDetailsService {
 
@@ -18,7 +20,14 @@ public class UserDetailServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername ( String username) throws UsernameNotFoundException {
 
-        User user = userRepository.findByUsername(username);
+    //    User user = userRepository.findByUsername(username);
+        Optional<User> userOptional = userRepository.findByUsername(username);
+
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("User not found: " + username);
+        }
+
+        User user = userOptional.get();
 
         if(user != null ){
             UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
@@ -29,7 +38,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
             return userDetails;
         }
 
-  throw new UsernameNotFoundException("userNot found with username " +  username);
+  throw new UsernameNotFoundException("userot found with username " +  username);
     }
 
 

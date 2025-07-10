@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class UserService {
@@ -28,7 +29,8 @@ public class UserService {
     }
 
 
-    public  User findByUsername( String username){
+
+    public Optional<User> findByUsername(String username){
         return userRepository.findByUsername(username);
     }
 
@@ -45,6 +47,12 @@ public class UserService {
     }
 
     public void  saveUser(User user){
+
+        if(user.getPassword()!=null){
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+          //  user.setPassword(passwordEncoder().encode(rawPassword));
+
+        }
         userRepository.save(user);
     }
 

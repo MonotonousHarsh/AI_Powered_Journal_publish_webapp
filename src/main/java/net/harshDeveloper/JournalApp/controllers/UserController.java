@@ -2,6 +2,7 @@ package net.harshDeveloper.JournalApp.controllers;
 
 
 import lombok.extern.slf4j.Slf4j;
+import net.harshDeveloper.JournalApp.Dto.UsersDto;
 import net.harshDeveloper.JournalApp.Entity.User;
 import net.harshDeveloper.JournalApp.api.response.WeatherResponse;
 import net.harshDeveloper.JournalApp.repository.UserRepository;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.print.attribute.standard.Chromaticity;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -24,6 +26,9 @@ public class UserController {
 
     @Autowired
     private WeatherService weatherService;
+
+    @Autowired
+    private UsersDto usersDto;
 
     @Autowired
     private UserService userService;
@@ -44,23 +49,35 @@ public class UserController {
     public ResponseEntity<?> updateUser(@RequestBody User user) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        User userInDb = userService.findByUsername(username);
-        if (userInDb != null) {
+//        User existing = userService.findByUsername(username);
+//        if (existing == null) {
+//            return ResponseEntity.notFound().build();
+//        }
+        Optional<User> userInDb = userService.findByUsername(username);
+      //  Optional<User> userOptional = userService.findByUsername(username);
+
+
+
+        User userInDB = userInDb.get();
+        if (userInDB != null) {
             // Preserve journal entries
-            user.setJounalEntries(userInDb.getJounalEntries());
+            user.setJounalEntries(userInDB.getJounalEntries());
+            userInDB.setUsername((user.getUsername()));
+            userInDB.setEmail(user.getEmail());
 
             userService.saveNewUser(user);
+            userService.saveUser(userInDB);
             return new ResponseEntity<>(user, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> DeleteUserName (@RequestBody User user){
+    @DeleteMapping()
+    public ResponseEntity<?> DeleteUserName (){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
             userRepository.deleteByUsername(username);
-          return new ResponseEntity<>(user, HttpStatus.NO_CONTENT);
+          return new ResponseEntity<>( HttpStatus.NO_CONTENT);
 
     }
 

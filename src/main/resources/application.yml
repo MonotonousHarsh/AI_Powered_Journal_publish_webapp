@@ -1,4 +1,11 @@
 spring:
+  Security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
   redis:
     uri: redis-cli -u redis://default:fNh4iimyC58gstQAF0UswT1dA3nHtTSA@redis-10513.crce179.ap-south-1-1.ec2.redns.redis-cloud.com:10513
 
